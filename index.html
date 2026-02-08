@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Simulador de Aporte com 2 Juros</title>
+<style>
+  body { font-family: Arial, sans-serif; padding: 20px; }
+  input, select, button { margin: 5px 0; padding: 5px; }
+  table { border-collapse: collapse; margin-top: 20px; width: 80%; }
+  th, td { border: 1px solid #333; padding: 5px; text-align: right; }
+  th { background-color: #f0f0f0; }
+</style>
+</head>
+<body>
+
+<h2>Simulador de Aporte com 2 Juros</h2>
+
+<label>Valor do aporte (R$):</label><br>
+<input type="number" id="aporte" value="2800"><br>
+
+<h3>Juro 1</h3>
+<label>Ativar Juro 1?</label>
+<input type="checkbox" id="juro1Ativo" checked><br>
+<label>Taxa (% ao mês):</label>
+<input type="number" id="juro1Taxa" value="1.25" step="0.01"><br>
+<label>Tipo:</label>
+<select id="juro1Tipo">
+  <option value="1">Simples</option>
+  <option value="2" selected>Composto</option>
+</select>
+
+<h3>Juro 2</h3>
+<label>Ativar Juro 2?</label>
+<input type="checkbox" id="juro2Ativo"><br>
+<label>Taxa (% ao mês):</label>
+<input type="number" id="juro2Taxa" value="0.5" step="0.01"><br>
+<label>Tipo:</label>
+<select id="juro2Tipo">
+  <option value="1">Simples</option>
+  <option value="2" selected>Composto</option>
+</select>
+
+<label>Meses:</label><br>
+<input type="number" id="meses" value="12"><br>
+
+<button onclick="simular()">Simular</button>
+
+<table id="tabela"></table>
+
+<script>
+function simular() {
+  const aporte = parseFloat(document.getElementById('aporte').value);
+  const meses = parseInt(document.getElementById('meses').value);
+
+  // Juro 1
+  const j1Ativo = document.getElementById('juro1Ativo').checked;
+  const j1Taxa = parseFloat(document.getElementById('juro1Taxa').value)/100;
+  const j1Tipo = parseInt(document.getElementById('juro1Tipo').value);
+
+  // Juro 2
+  const j2Ativo = document.getElementById('juro2Ativo').checked;
+  const j2Taxa = parseFloat(document.getElementById('juro2Taxa').value)/100;
+  const j2Tipo = parseInt(document.getElementById('juro2Tipo').value);
+
+  let saldo = 0;
+  let tabelaHTML = `<tr><th>Mês</th><th>Aporte (R$)</th><th>Juro 1 (R$)</th><th>Juro 2 (R$)</th><th>Saldo Final (R$)</th></tr>`;
+
+  for (let mes = 1; mes <= meses; mes++) {
+    let juros1 = 0;
+    let juros2 = 0;
+
+    // Juro 1
+    if(j1Ativo){
+      if(j1Tipo === 1) juros1 = aporte * j1Taxa;   // simples
+      else juros1 = saldo * j1Taxa;               // composto
+    }
+
+    // Juro 2
+    if(j2Ativo){
+      if(j2Tipo === 1) juros2 = aporte * j2Taxa; // simples
+      else juros2 = saldo * j2Taxa;              // composto
+    }
+
+    saldo = saldo + aporte + juros1 + juros2;
+
+    tabelaHTML += `<tr>
+      <td>${mes}</td>
+      <td>${aporte.toFixed(2)}</td>
+      <td>${juros1.toFixed(2)}</td>
+      <td>${juros2.toFixed(2)}</td>
+      <td>${saldo.toFixed(2)}</td>
+    </tr>`;
+  }
+
+  document.getElementById('tabela').innerHTML = tabelaHTML;
+}
+</script>
+
+</body>
+</html>
